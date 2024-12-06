@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"final/controllers"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes() *gin.Engine {
@@ -13,6 +14,10 @@ func SetupRoutes() *gin.Engine {
 
 	r.GET("/tasks", controllers.GetTasks)
 	r.POST("/tasks", controllers.CreateTask)
+
+	r.GET("/users/:user_id/tasks", controllers.GetTasksByUser)
+	r.DELETE("/tasks/:id", controllers.DeleteTask)
+	r.PUT("/tasks/:id", controllers.UpdateTask)
 
 	return r
 }
