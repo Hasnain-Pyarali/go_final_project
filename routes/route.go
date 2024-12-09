@@ -9,9 +9,18 @@ import (
 func SetupRoutes() *gin.Engine {
 	r := gin.Default()
 
-	r.POST("/register", controllers.Register)
+	r.LoadHTMLGlob("templates/*")
+
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(302, "/login")
+    })
+
+	r.GET("/login", controllers.RenderLoginPage)
+	r.GET("/register", controllers.RenderRegisterPage)
+	r.GET("/profile/:user_id", controllers.RenderProfilePage)
 	r.POST("/login", controllers.Login)
-	r.DELETE("/delete", controllers.Delete)
+	r.POST("/register", controllers.Register)
+	r.POST("/delete-account/:user_id", controllers.DeleteAccount)
 
 	r.GET("/tasks", controllers.GetTasks)
 	r.POST("/tasks", controllers.CreateTask)
