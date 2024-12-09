@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"final/config"
 	"final/models"
@@ -48,7 +49,8 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": user.Name})
+	// c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": user.Name})
+    c.Redirect(http.StatusFound, fmt.Sprintf("/profile/%d", user.ID))
 }
 
 func Register(c *gin.Context) {
@@ -77,7 +79,8 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully", "user": user.Name})
+    c.Redirect(http.StatusFound, "/login")
+	// c.JSON(http.StatusOK, gin.H{"message": "User registered successfully", "user": user.Name})
 }
 
 func DeleteAccount(c *gin.Context) {
