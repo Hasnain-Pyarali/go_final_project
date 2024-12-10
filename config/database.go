@@ -1,22 +1,16 @@
 package config
 
 import (
-<<<<<<< HEAD
-    "final/models"
-    "gorm.io/driver/sqlite"
-    "gorm.io/gorm"
-=======
 	"log"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"final/models"
->>>>>>> origin/main
 )
 
 var DB *gorm.DB
 
 func Migrate(db *gorm.DB) {
-	err := db.AutoMigrate(&models.User{})
+	err := db.AutoMigrate(&models.User{}, &models.Task{})
 	if err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
@@ -24,22 +18,10 @@ func Migrate(db *gorm.DB) {
 }
 
 func ConnectDatabase() {
-<<<<<<< HEAD
-    database, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
-    if err != nil {
-        panic("Failed to connect to database!")
-    }
-
-    // Auto-migrate tables
-    database.AutoMigrate(&models.User{}, &models.Task{})
-
-    DB = database
-=======
 	database, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to database!")
 	}
+	Migrate(database)
 	DB = database
-	Migrate(DB)
->>>>>>> origin/main
 }
