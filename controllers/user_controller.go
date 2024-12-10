@@ -21,7 +21,7 @@ func RenderRegisterPage(c *gin.Context) {
 func RenderProfilePage(c *gin.Context) {
 	var user models.User
 
-	userID := c.Param("user_id")	
+	userID := c.Param("user_id")
 	if err := config.DB.First(&user, userID).Error; err != nil {
 		c.JSON(404, gin.H{"error": "User not found"})
 		return
@@ -92,6 +92,32 @@ func DeleteAccount(c *gin.Context) {
     }
 
     c.Redirect(http.StatusFound, "/login")
+}
+
+func UpdateProfilePicture(c *gin.Context) {
+	var user models.User
+	var data struct {
+		Picture string `json:"picture"`
+		UserID uint `json:"user_id"`
+	}
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	if err := config.DB.First(&user, data.UserID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	user.Picture = data.Picture
+	if err := config.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update profile picture"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Profile picture updated successfully"})
 }
 
 // func Delete(c *gin.Context) {

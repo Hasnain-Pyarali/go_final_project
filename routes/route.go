@@ -20,6 +20,7 @@ func SetupRoutes() *gin.Engine {
 	r.GET("/profile/:user_id", controllers.RenderProfilePage)
 	r.POST("/login", controllers.Login)
 	r.POST("/register", controllers.Register)
+	r.POST("/update-profile-picture", controllers.UpdateProfilePicture)
 	r.POST("/delete-account/:user_id", controllers.DeleteAccount)
 
 	r.GET("/tasks", controllers.GetTasks)
