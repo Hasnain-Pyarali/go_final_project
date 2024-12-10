@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Task Manager</h1>
+
+        <!-- Task Form -->
+        <h2>Create Task</h2>
+        <form action="/tasks" method="POST">
+            <input type="hidden" name="user_id" value="{{ .UserID }}">
+            <div class="mb-3">
+                <label for="title" class="form-label">Task Title</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Task</button>
+        </form>
+
+        <!-- Task List -->
+        <h2 class="mt-4">Your Tasks</h2>
+        <ul class="list-group" id="taskList">
+            {{ range .Tasks }}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ .Title }}
+                <span>
+                    <form action="/tasks/{{ .ID }}/update" method="POST" class="d-inline">
+                        <button type="button" class="btn btn-info btn-sm" onclick="this.closest('form').submit()">Edit</button>
+                        <input type="hidden" name="title" id="editTitle{{ .ID }}">
+                    </form>
+                    <form action="/tasks/{{ .ID }}/delete" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this task?')">Delete</button>
+                    </form>
+                </span>
+            </li>
+            {{ end }}
+        </ul>
+    </div>
+
+    <script>
+    document.querySelectorAll('.btn-info').forEach(button => {
+        button.addEventListener('click', function() {
+            const li = this.closest('li');
+            const currentTitle = li.childNodes[0].textContent.trim();
+            const newTitle = prompt("Edit task title:", currentTitle);
+            
+            if (newTitle) {
+                const hiddenInput = this.closest('form').querySelector('input[type="hidden"]');
+                hiddenInput.value = newTitle;
+                this.closest('form').submit();
+            }
+        });
+    });
+    </script>
+</body>
+</html>

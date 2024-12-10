@@ -4,61 +4,63 @@ import (
 	"final/config"
 	"final/models"
 	"net/http"
+	"fmt"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func GetTasks(c *gin.Context) {
-	var tasks []models.Task
-	config.DB.Find(&tasks)
-	c.JSON(http.StatusOK, tasks)
+func RenderTasksPage(c *gin.Context) {
+    userID := c.Param("user_id")
+
+    var tasks []models.Task
+    config.DB.Where("user_id = ?", userID).Find(&tasks)
+
+    c.HTML(200, "tasks.html", gin.H{
+        "Tasks": tasks,
+        "UserID": userID,
+    })
 }
 
 func CreateTask(c *gin.Context) {
-	var task models.Task
-	if err := c.ShouldBindJSON(&task); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	config.DB.Create(&task)
-	c.JSON(http.StatusOK, task)
-}
+    userID, _ := strconv.ParseUint(c.PostForm("user_id"), 10, 64)
+    title := c.PostForm("title")
 
-func GetTasksByUser(c *gin.Context) {
-	userID := c.Param("user_id")
-	var tasks []models.Task
+    task := models.Task{
+        Title:     title,
+        Completed: false,
+        UserID:    uint(userID),
+    }
 
-	if err := config.DB.Where("user_id = ?", userID).Find(&tasks).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tasks not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, tasks)
-}
-
-func DeleteTask(c *gin.Context) {
-	taskID := c.Param("id")
-	if err := config.DB.Delete(&models.Task{}, taskID).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Task deleted successfully"})
+    config.DB.Create(&task)
+    c.Redirect(http.StatusFound, fmt.Sprintf("/tasks/%d", userID))
 }
 
 func UpdateTask(c *gin.Context) {
-	var task models.Task
-	taskID := c.Param("id")
+    taskID := c.Param("id")
+    title := c.PostForm("title")
+    
+    var task models.Task
+    if err := config.DB.First(&task, taskID).Error; err != nil {
+        c.Redirect(http.StatusFound, fmt.Sprintf("/tasks/%d", task.UserID))
+        return
+    }
 
-	if err := config.DB.First(&task, taskID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
-		return
-	}
+    task.Title = title
+    config.DB.Save(&task)
+    
+    c.Redirect(http.StatusFound, fmt.Sprintf("/tasks/%d", task.UserID))
+}
 
-	if err := c.ShouldBindJSON(&task); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+func DeleteTask(c *gin.Context) {
+    taskID := c.Param("id")
+    var task models.Task
 
-	config.DB.Save(&task)
-	c.JSON(http.StatusOK, task)
+    if err := config.DB.First(&task, taskID).Error; err != nil {
+        c.Redirect(http.StatusFound, fmt.Sprintf("/tasks/%d", task.UserID))
+        return
+    }
+
+    config.DB.Delete(&task)
+    c.Redirect(http.StatusFound, fmt.Sprintf("/tasks/%d", task.UserID))
 }
