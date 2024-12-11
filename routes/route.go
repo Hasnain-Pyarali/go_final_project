@@ -2,12 +2,15 @@ package routes
 
 import (
 	"final/controllers"
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes() *gin.Engine {
 	r := gin.Default()
+
+	r.Use(cors.Default())
 
 	r.LoadHTMLGlob("templates/*")
 
@@ -23,12 +26,10 @@ func SetupRoutes() *gin.Engine {
 	r.POST("/update-profile-picture", controllers.UpdateProfilePicture)
 	r.POST("/delete-account/:user_id", controllers.DeleteAccount)
 
-	r.GET("/tasks", controllers.GetTasks)
-	r.POST("/tasks", controllers.CreateTask)
-
-	r.GET("/users/:user_id/tasks", controllers.GetTasksByUser)
-	r.DELETE("/tasks/:id", controllers.DeleteTask)
-	r.PUT("/tasks/:id", controllers.UpdateTask)
+	r.GET("/tasks/:user_id", controllers.RenderTasksPage)
+    r.POST("/tasks", controllers.CreateTask)
+    r.POST("/tasks/:id/update", controllers.UpdateTask)
+    r.POST("/tasks/:id/delete", controllers.DeleteTask)
 
 	return r
 }

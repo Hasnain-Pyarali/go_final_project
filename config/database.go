@@ -10,7 +10,7 @@ import (
 var DB *gorm.DB
 
 func Migrate(db *gorm.DB) {
-	err := db.AutoMigrate(&models.User{})
+	err := db.AutoMigrate(&models.User{}, &models.Task{})
 	if err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
@@ -22,6 +22,6 @@ func ConnectDatabase() {
 	if err != nil {
 		panic("Failed to connect to database!")
 	}
+	Migrate(database)
 	DB = database
-	Migrate(DB)
 }
