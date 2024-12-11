@@ -1,6 +1,6 @@
 # go_final_project
 
-This project is done by: Nafilah Yuga Zhafir & Hasnain Pyarali (5999241025)
+This project is done by: Nafilah Yuga Zhafir (5025221108) & Hasnain Pyarali (5999241025)
 
 You can check the YouTube video here: https://youtu.be/xt9ILEbZGLw
 
