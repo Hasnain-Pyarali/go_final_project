@@ -120,6 +120,32 @@ func UpdateProfilePicture(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Profile picture updated successfully"})
 }
 
+func EditProfile(c *gin.Context) {
+	var user models.User
+	var data struct {
+		Name string `json:"name"`
+		UserID uint `json:"user_id"`
+	}
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	if err := config.DB.First(&user, data.UserID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	user.Name = data.Name
+	if err := config.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update profile"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully"})
+}
+
 // func Delete(c *gin.Context) {
 // 	id := c.Param("id")
 // 	var user models.User
