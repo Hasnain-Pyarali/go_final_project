@@ -1,6 +1,8 @@
 # go_final_project
 
-This project is done by: Nafilah Yuga Zhafir & Hasnain Pyarali (me)
+This project is done by: Nafilah Yuga Zhafir & Hasnain Pyarali (5999241025)
+
+You can check the YouTube video here: https://youtu.be/xt9ILEbZGLw
 
 - simple CRUD with at least two tables relationship
 - do-able in 2 weeks
