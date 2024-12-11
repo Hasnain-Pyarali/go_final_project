@@ -52,8 +52,11 @@
                         <i class="bi bi-pencil-fill"></i>
                     </div>
                 </div>
-                <div class="ms-4">
-                    <h4 id="user-fullname">{{ .Name }}</h4>
+                <div class="ms-4 d-flex align-items-center">
+                    <h4 id="user-fullname" class="mb-0">{{ .Name }}</h4>
+                    <button class="btn btn-outline-secondary btn-sm ms-3" onclick="editProfile()">
+                        <i class="bi bi-pencil-square"></i> Edit Profile
+                    </button>
                 </div>
             </div>
 
@@ -70,8 +73,6 @@
                         <button type="button" class="btn btn-outline-secondary" id="toggle-password">Show</button>
                     </div>
                 </div>
-                
-                <button type="button" class="btn btn-secondary w-100">Update</button>
             </form>
 
             <form method="POST" action="/delete-account/{{ .ID }}" onsubmit="return confirmDelete();">
@@ -115,6 +116,28 @@
                         alert('Profile picture updated successfully.');
                     } else {
                         alert('Failed to update profile picture. Please try again.');
+                    }
+                }).catch(error => console.error('Error:', error));
+            }
+        }
+
+        function editProfile() {
+            const newName = prompt("Enter your new name:", document.getElementById('user-fullname').textContent);
+
+            if (newName) {
+                document.getElementById('user-fullname').textContent = newName;
+
+                fetch('/update-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: newName, user_id: Number("{{ .ID }}") })
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Profile updated successfully.');
+                    } else {
+                        alert('Failed to update profile. Please try again.');
                     }
                 }).catch(error => console.error('Error:', error));
             }
